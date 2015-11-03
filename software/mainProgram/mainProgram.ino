@@ -1,34 +1,41 @@
-//I want to blink on pb4
-
 //uses about 1.5 microamps when sleeping, it should theoretically stay in standby for 3,888 days on a 200 mah cr2032 cell (the battery will self-discharge way sooner though)
 
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 #define BUTTON				PB3
 #define ANIM_DELAY			25						//min time the button needs to be held to change animations (mainly for debouncing)
 #define SLEEP_DELAY			1000					//min time the button needs to be held to enable sleep mode
+#define MAXLEDS 			18
 
 byte currentLed = 0;
-byte LED = PB0;
+//byte LED = PB0;
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
 
 
 void setup() {
-	ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
-	ACSR |= _BV(ACD);                   //disable the analog comparator
-	DDRB &= ~(1<<BUTTON);					//make pb3 an input
+	// ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
+	// ACSR |= _BV(ACD);                   //disable the analog comparator
+	// DDRB &= ~(1<<BUTTON);					//make pb3 an input
 	
-	sleep();							//go to sleep immediately until woken up by the button interrupt
+	// sleep();							//go to sleep immediately until woken up by the button interrupt
+	
+
 }
 
 
 void loop() {
-	animation();			//run the led animation
-	checkBtn();				//check the button state
+	//animation();			//run the led animation
+	//checkBtn();				//check the button state
 	//check the sleep timer
+	
+	for(byte i=0;i < MAXLEDS;i++) {
+		charmander(i);
+		delay(100);
+	}
 }
 
 
