@@ -14,62 +14,61 @@
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
+byte currentAnim = 1;						//the currently displayed animation
 
 
 void setup() {
 	ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
 	ACSR |= _BV(ACD);                   //disable the analog comparator
 	
-	sleep();							//go to sleep immediately until woken up by the button interrupt
+	//sleep();							//go to sleep immediately until woken up by the button interrupt
 }
 
 
 void loop() {
 	checkBtn();				//check the button state
+	animation();
 	//check the sleep timer
 	
-	for(byte i=0;i < MAXLEDS;i++) {
-		charmander(i);
-		delay(100);
-	}
+
 }
 
 
-
-/* void animation() {
-	switch(currentLed) {				//"animation" placeholder test stuff
-		case 0:
-			//LED = PB0;
-			PORTB |= (1<<PB0);
-			PORTB &= ~(1<<PB1);
-			PORTB &= ~(1<<PB2);
-			break;
-		case 1:
-			//LED = PB1;
-			PORTB |= (1<<PB1);
-			PORTB &= ~(1<<PB0);
-			PORTB &= ~(1<<PB2);
-			break;
-		case 2:
-			//LED = PB2;
-			PORTB |= (1<<PB2);
-			PORTB &= ~(1<<PB1);
-			PORTB &= ~(1<<PB0);
-			break;
+//displays the currently selected animation on the charlieplexed LEDs
+//MAKE THIS NON BLOCKING
+void animation() {
+	
+	if(currentAnim == 0) {						//simple, goes through the LEDs incrementally, one at a time
+		for(byte i=0;i < MAXLEDS;i++) {
+			charmander(i);
+			delay(100);
+		}
+	}
+	if(currentAnim == 1) {						//blinks each LED color section (3 colors)
+		
+		for(byte i = 0;i < 3;i++) {					//for each color
+			for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
+				if(x % 3 == 0) {					//only match every third led
+					byte outled = x + i;
+					if(outled < MAXLEDS) {
+						charmander(outled);					//light the led we got, plus the color offset
+						delay(100);
+					}
+				}
+		
+			}
+		}
 	}
 	
-	// PORTB |= (1<<LED);
-	// delay(1000);
-	// PORTB &= ~(1<<LED);
 }
 
 
 void switchAnimation() {
-	currentLed++;
-	if(currentLed > 2) {
-		currentLed = 0;
+	currentAnim++;
+	if(currentAnim > 2) {
+		currentAnim = 0;
 	}
-} */
+}
 
 
 //gets the current button state, this only works while the device is not sleeping
@@ -96,7 +95,7 @@ void checkBtn() {
 				}
 				else if(millis() >= (btnTimer + ANIM_DELAY)) {		//if the button has been HIGH for at least ANIM_DELAY ms
 					btnTimerFlag = false;							//stop the button timer
-					//switchAnimation();								//switch the animation
+					switchAnimation();								//switch the animation
 				}
 				else {												//the button press failed the debounce test (not held long enough)
 					btnTimerFlag = false;							//stop the button timer
