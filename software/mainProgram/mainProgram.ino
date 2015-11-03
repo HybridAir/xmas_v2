@@ -14,7 +14,10 @@
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
-byte currentAnim = 1;						//the currently displayed animation
+byte currentAnim = 2;						//the currently displayed animation
+
+byte currentColor = 0;
+long lastTime = 0;
 
 
 void setup() {
@@ -44,7 +47,7 @@ void animation() {
 			delay(100);
 		}
 	}
-	if(currentAnim == 1) {						//blinks each LED color section (3 colors)
+	else if(currentAnim == 1) {						//blinks each LED color section (3 colors)
 		
 		for(byte i = 0;i < 3;i++) {					//for each color
 			for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
@@ -58,6 +61,31 @@ void animation() {
 		
 			}
 		}
+	}
+	else if(currentAnim == 2) {	
+	
+		
+			for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
+				if(x % 3 == 0) {					//only match every third led
+					byte outled = x + currentColor;
+					if(outled < MAXLEDS) {
+						charmander(outled);					//light the led we got, plus the color offset
+					}
+				}
+		
+			}
+			
+			if(millis() > 500 + lastTime) {
+				lastTime = millis();
+				currentColor++;
+				
+				if(currentColor > 2) {
+					currentColor = 0;
+				}
+			}
+
+	
+	
 	}
 	
 }
