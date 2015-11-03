@@ -4,32 +4,28 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-#define BUTTON				PB3
-#define ANIM_DELAY			25						//min time the button needs to be held to change animations (mainly for debouncing)
-#define SLEEP_DELAY			1000					//min time the button needs to be held to enable sleep mode
+
+#define BUTTON				PB5						//this button will only work when the reset functionality is disabled
+#define ANIM_DELAY			25						//min ms the button needs to be held to change animations (mainly for debouncing)
+#define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
 #define MAXLEDS 			18
 
-byte currentLed = 0;
-//byte LED = PB0;
+
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
 
 
 void setup() {
-	// ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
-	// ACSR |= _BV(ACD);                   //disable the analog comparator
-	// DDRB &= ~(1<<BUTTON);					//make pb3 an input
+	ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
+	ACSR |= _BV(ACD);                   //disable the analog comparator
 	
-	// sleep();							//go to sleep immediately until woken up by the button interrupt
-	
-
+	sleep();							//go to sleep immediately until woken up by the button interrupt
 }
 
 
 void loop() {
-	//animation();			//run the led animation
-	//checkBtn();				//check the button state
+	checkBtn();				//check the button state
 	//check the sleep timer
 	
 	for(byte i=0;i < MAXLEDS;i++) {
@@ -40,7 +36,7 @@ void loop() {
 
 
 
-void animation() {
+/* void animation() {
 	switch(currentLed) {				//"animation" placeholder test stuff
 		case 0:
 			//LED = PB0;
@@ -73,7 +69,7 @@ void switchAnimation() {
 	if(currentLed > 2) {
 		currentLed = 0;
 	}
-}
+} */
 
 
 //gets the current button state, this only works while the device is not sleeping
@@ -100,7 +96,7 @@ void checkBtn() {
 				}
 				else if(millis() >= (btnTimer + ANIM_DELAY)) {		//if the button has been HIGH for at least ANIM_DELAY ms
 					btnTimerFlag = false;							//stop the button timer
-					switchAnimation();								//switch the animation
+					//switchAnimation();								//switch the animation
 				}
 				else {												//the button press failed the debounce test (not held long enough)
 					btnTimerFlag = false;							//stop the button timer
@@ -113,9 +109,9 @@ void checkBtn() {
 
 
 void sleep() {
-	PORTB &= ~(1<<PB0);
-	PORTB &= ~(1<<PB1);
-	PORTB &= ~(1<<PB2);
+	// PORTB &= ~(1<<PB0);
+	// PORTB &= ~(1<<PB1);
+	// PORTB &= ~(1<<PB2);
 	
 	
     GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
