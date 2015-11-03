@@ -9,15 +9,21 @@
 #define ANIM_DELAY			25						//min ms the button needs to be held to change animations (mainly for debouncing)
 #define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
 #define MAXLEDS 			18
+#define FRAME_DELAY			125
 
 
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
-byte currentAnim = 2;						//the currently displayed animation
+byte currentAnim = 3;						//the currently displayed animation
 
 byte currentColor = 0;
 long lastTime = 0;
+byte currentLed = 0;
+bool increasing = true;
+
+long lastFrameTime = 0;
+byte currentFrame = 0;
 
 
 void setup() {
@@ -31,6 +37,7 @@ void setup() {
 void loop() {
 	checkBtn();				//check the button state
 	animation();
+	checkFrame();
 	//check the sleep timer
 	
 
@@ -38,62 +45,90 @@ void loop() {
 
 
 //displays the currently selected animation on the charlieplexed LEDs
-//MAKE THIS NON BLOCKING
 void animation() {
 	
-	if(currentAnim == 0) {						//simple, goes through the LEDs incrementally, one at a time
-		for(byte i=0;i < MAXLEDS;i++) {
-			charmander(i);
-			delay(100);
+	if(currentAnim <= 3) {					//base animation: leds are lit sequentially, individually
+		if(currentFrame >= MAXLEDS) {
+			currentFrame = 0;
 		}
-	}
-	else if(currentAnim == 1) {						//blinks each LED color section (3 colors)
-		
-		for(byte i = 0;i < 3;i++) {					//for each color
-			for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
-				if(x % 3 == 0) {					//only match every third led
-					byte outled = x + i;
-					if(outled < MAXLEDS) {
-						charmander(outled);					//light the led we got, plus the color offset
-						delay(100);
-					}
-				}
-		
-			}
+			byte ledOut = currentFrame;
+		if(currentAnim % 2 == 0) {
+			ledOut = (MAXLEDS - 1) - currentFrame;
 		}
-	}
-	else if(currentAnim == 2) {	
-	
+		charmander(ledOut);
 		
-			for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
-				if(x % 3 == 0) {					//only match every third led
-					byte outled = x + currentColor;
-					if(outled < MAXLEDS) {
-						charmander(outled);					//light the led we got, plus the color offset
-					}
-				}
-		
+		//if above 2, add offset
+		if(currentAnim > 1) {
+			byte offset1 = ledOut + 6;
+			if(offset1 >= MAXLEDS) {
+				offset1 = offset1 - MAXLEDS;
 			}
 			
-			if(millis() > 500 + lastTime) {
-				lastTime = millis();
-				currentColor++;
-				
-				if(currentColor > 2) {
-					currentColor = 0;
+			byte offset2 = offset1 + 6;
+			if(offset2 >= MAXLEDS) {
+				offset2 = offset2 - MAXLEDS;
+			}
+			charmander(offset1);
+			charmander(offset2);
+		}
+	}
+	else if(currentAnim == 4) {						//blinks each individual LED, per color section (3 colors)
+		
+		if(currentFrame >= MAXLEDS) {
+			currentFrame = 0;
+			currentColor++;
+			
+			if(currentColor > 2) {
+				currentColor = 0;
+			}
+		}
+		
+		if(currentFrame % 3 == 0) {
+			byte outled = currentColor + currentFrame;
+			if(outled < MAXLEDS) {
+				charmander(outled);					//light the led we got, plus the color offset
+			}
+		}
+		
+	}	
+	else if(currentAnim == 5) {							//blink each full color section at once
+	
+		if(currentFrame > 2) {
+			currentFrame = 0;
+		}
+
+		for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
+			if(x % 3 == 0) {					//only match every third led
+				byte outled = x + currentFrame;
+				if(outled < MAXLEDS) {
+					charmander(outled);					//light the led we got, plus the color offset
 				}
 			}
+	
+		}
 
-	
-	
 	}
+}
+
+
+void checkFrame() {
+	// long time = FRAME_DELAY + lastFrameTime;
+	// if(currentAnim == 3) {
+		// time = (FRAME_DELAY * 2) + lastFrameTime;
+	// }
 	
+	if(millis() > FRAME_DELAY + lastFrameTime) {
+		lastFrameTime = millis();
+		currentFrame++;
+	}
 }
 
 
 void switchAnimation() {
+	currentFrame = 0;
+	
 	currentAnim++;
-	if(currentAnim > 2) {
+	if(currentAnim > 4) {
 		currentAnim = 0;
 	}
 }
