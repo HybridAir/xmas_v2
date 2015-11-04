@@ -25,7 +25,7 @@
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
-byte currentAnim = 2;						//the currently displayed animation
+byte currentAnim = 5;						//the currently displayed animation
 
 byte currentColor = 0;
 long lastTime = 0;
@@ -34,12 +34,12 @@ bool increasing = true;
 
 long lastFrameTime = 0;
 byte currentFrame = 0;
+byte prevFrame = 0;
 
 
 void setup() {
 	ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
 	ACSR |= _BV(ACD);                   //disable the analog comparator
-	
 	//sleep();							//go to sleep immediately until woken up by the button interrupt
 }
 
@@ -57,7 +57,8 @@ void loop() {
 //displays the currently selected animation on the charlieplexed LEDs
 void animation() {
 	
-	if(currentAnim <= 3) {								//if animations 0-3 are selected
+	//if(currentAnim <= 3) {								//if animations 0-3 are selected
+	if(currentAnim <= 5) {								//if animations 0-3 are selected
 	
 		if(currentFrame >= MAXLEDS) {					//used for looping the animation
 			currentFrame = 0;
@@ -72,6 +73,7 @@ void animation() {
 		
 
 		if(currentAnim > 1) {							//if animations 2 or 3 are selected
+
 			//add two extra LEDs, offset by 6 each to create a sort of triangle effect
 
 			for(char i = 0;i<2;i++) {							//need to add two extra LEDs
@@ -84,26 +86,7 @@ void animation() {
 			}
 		}
 	}
-	else if(currentAnim == 4) {						//blinks each individual LED, per color section (3 colors)
-		
-		if(currentFrame >= MAXLEDS) {
-			currentFrame = 0;
-			currentColor++;
-			
-			if(currentColor > 2) {
-				currentColor = 0;
-			}
-		}
-		
-		if(currentFrame % 3 == 0) {
-			byte outled = currentColor + currentFrame;
-			if(outled < MAXLEDS) {
-				charmander(outled);					//light the led we got, plus the color offset
-			}
-		}
-		
-	}	
-	else if(currentAnim == 5) {							//blink each full color section at once
+	else if(currentAnim == 6) {							//blink each full color section at once
 	
 		if(currentFrame > 2) {
 			currentFrame = 0;
@@ -120,15 +103,31 @@ void animation() {
 		}
 
 	}
+	else {
+		if(currentFrame % 8 == 0) {
+			if(currentColor) {
+				currentColor = 0;
+			}
+			else {
+				currentColor = 1;
+			}
+			currentFrame = 1;
+		}
+		
+		if(currentColor) {
+			for(byte i=0;i < MAXLEDS;i++) {
+				charmander(i);
+			}
+		}
+		else {
+			DDRB = 0;
+			PORTB = 0;
+		}
+	}
 }
 
 
 void checkFrame() {
-	// long time = FRAME_DELAY + lastFrameTime;
-	// if(currentAnim == 3) {
-		// time = (FRAME_DELAY * 2) + lastFrameTime;
-	// }
-	
 	if(millis() > FRAME_DELAY + lastFrameTime) {
 		lastFrameTime = millis();
 		currentFrame++;
@@ -140,7 +139,7 @@ void switchAnimation() {
 	currentFrame = 0;
 	
 	currentAnim++;
-	if(currentAnim > 4) {
+	if(currentAnim > 7) {
 		currentAnim = 0;
 	}
 }
