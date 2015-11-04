@@ -1,5 +1,15 @@
 //uses about 1.5 microamps when sleeping, it should theoretically stay in standby for 3,888 days on a 200 mah cr2032 cell (the battery will self-discharge way sooner though)
 
+/* ANIMATIONS: 
+0: single led sequential
+1: single led sequential REVERSED
+2: tri led sequential
+3: tri led sequential REVERSED
+
+
+
+*/
+
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -15,7 +25,7 @@
 byte prevBtn = 0;
 bool btnTimerFlag = false;
 long btnTimer = 0;
-byte currentAnim = 3;						//the currently displayed animation
+byte currentAnim = 2;						//the currently displayed animation
 
 byte currentColor = 0;
 long lastTime = 0;
@@ -47,29 +57,31 @@ void loop() {
 //displays the currently selected animation on the charlieplexed LEDs
 void animation() {
 	
-	if(currentAnim <= 3) {					//base animation: leds are lit sequentially, individually
-		if(currentFrame >= MAXLEDS) {
+	if(currentAnim <= 3) {								//if animations 0-3 are selected
+	
+		if(currentFrame >= MAXLEDS) {					//used for looping the animation
 			currentFrame = 0;
 		}
-			byte ledOut = currentFrame;
-		if(currentAnim % 2 == 0) {
+		
+		byte ledOut = currentFrame;						//get the LED that needs to be lit
+		
+		if(currentAnim % 2 == 0) {						//if animations 0 or 2 are selected, reverse the order that the LEDs light up
 			ledOut = (MAXLEDS - 1) - currentFrame;
 		}
-		charmander(ledOut);
+		charmander(ledOut);								//light up a single LED
 		
-		//if above 2, add offset
-		if(currentAnim > 1) {
-			byte offset1 = ledOut + 6;
-			if(offset1 >= MAXLEDS) {
-				offset1 = offset1 - MAXLEDS;
+
+		if(currentAnim > 1) {							//if animations 2 or 3 are selected
+			//add two extra LEDs, offset by 6 each to create a sort of triangle effect
+
+			for(char i = 0;i<2;i++) {							//need to add two extra LEDs
+				byte offset = 6 + (6*i);						//create the offset
+				byte led = ledOut + offset;						//get the new led number to light
+				if(led >= MAXLEDS) {							//check for overflows
+					led = led - MAXLEDS;						//loop the led to the beginning if needed
+				}
+				charmander(led);								//light the LED
 			}
-			
-			byte offset2 = offset1 + 6;
-			if(offset2 >= MAXLEDS) {
-				offset2 = offset2 - MAXLEDS;
-			}
-			charmander(offset1);
-			charmander(offset2);
 		}
 	}
 	else if(currentAnim == 4) {						//blinks each individual LED, per color section (3 colors)
