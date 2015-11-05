@@ -95,7 +95,7 @@ void animation() {
 		}
 
 	}
-	else {
+/* 	else {
 		if(currentFrame % 8 == 0) {
 			if(currentColor) {
 				currentColor = 0;
@@ -115,7 +115,7 @@ void animation() {
 			DDRB = 0;
 			PORTB = 0;
 		}
-	}
+	} */
 }
 
 

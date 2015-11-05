@@ -20,19 +20,21 @@
 #define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
 #define MAXLEDS 			18
 #define FRAME_DELAY			125
+#define SLEEPTIME			60000
 
 
 byte prevBtn = 0;
 bool btnTimerFlag = false;
-long btnTimer = 0;
+unsigned long btnTimer = 0;
 byte currentAnim = 5;						//the currently displayed animation
+unsigned long lastSleepTime = 0;
 
 byte currentColor = 0;
-long lastTime = 0;
+unsigned long lastTime = 0;
 byte currentLed = 0;
 bool increasing = true;
 
-long lastFrameTime = 0;
+unsigned long lastFrameTime = 0;
 byte currentFrame = 0;
 byte prevFrame = 0;
 
@@ -48,9 +50,16 @@ void loop() {
 	checkBtn();				//check the button state
 	animation();
 	checkFrame();
-	//check the sleep timer
-	
+	sleepTimer();
+}
 
+
+//checks if it has been 
+void sleepTimer() {
+	if(millis() >= SLEEPTIME) {
+		//lastSleepTime = millis();
+		sleep();
+	}
 }
 
 
@@ -94,16 +103,16 @@ void checkBtn() {
 
 
 void sleep() {
-	// PORTB &= ~(1<<PB0);
-	// PORTB &= ~(1<<PB1);
-	// PORTB &= ~(1<<PB2);
+	
+	DDRB = 0;
+	PORTB = 0;
 	
 	
-    GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
-    PCMSK |= _BV(PCINT3);                   // Use PB3 as interrupt pin
+    //GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
+    //PCMSK |= _BV(PCINT3);                   // Use PB3 as interrupt pin
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);    // replaces above statement
     sleep_enable();                         // Sets the Sleep Enable bit in the MCUCR Register (SE BIT)
-    sei();                                  // Enable interrupts
+    //sei();                                  // Enable interrupts
     sleep_cpu();                            // sleep
 	
     cli();                                  // Disable interrupts
