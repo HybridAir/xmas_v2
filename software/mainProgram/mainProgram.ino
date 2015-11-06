@@ -5,6 +5,8 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
+#include <util/delay.h>
+
 
 #define BUTTON				PB5						//used to wake up/go to sleep and switch animations
 #define ANIM_DELAY			25						//min ms the button needs to be held to change animations (mainly for debouncing)

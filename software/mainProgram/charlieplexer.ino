@@ -53,10 +53,10 @@ void charmander(byte i) {
 	
 	DDRB = (1<<charliePin[pgm_read_byte(&(LED[i][0]))])|(1<<charliePin[led1]);
 	PORTB = (1<<charliePin[led1]);
-	
-				delay(1);
-			DDRB = 0;
-			PORTB = 0;
+										
+	_delay_ms(1);									//wait 1 ms to get a consistent brightness
+	DDRB = 0;										//turn off all the LEDs immediately after
+	PORTB = 0;
   
 }
 
