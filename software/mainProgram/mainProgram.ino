@@ -1,72 +1,56 @@
 //uses about 1.5 microamps when sleeping, it should theoretically stay in standby for 3,888 days on a 200 mah cr2032 cell (the battery will self-discharge way sooner though)
 
-/* ANIMATIONS: 
-0: single led sequential
-1: single led sequential REVERSED
-2: tri led sequential
-3: tri led sequential REVERSED
-
-
-
-*/
 
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
 
-#define BUTTON				PB5						//this button will only work when the reset functionality is disabled
+#define BUTTON				PB5						//used to wake up/go to sleep and switch animations
 #define ANIM_DELAY			25						//min ms the button needs to be held to change animations (mainly for debouncing)
 #define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
-#define MAXLEDS 			18
-#define FRAME_DELAY			125
-#define SLEEPTIME			60000
+#define MAXLEDS 			18						//the max number of LEDs in the entire project
+#define FRAME_DELAY			125						//base animation refresh rate in ms
+#define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
 
 
-byte prevBtn = 0;
-bool btnTimerFlag = false;
-unsigned long btnTimer = 0;
-byte currentAnim = 5;						//the currently displayed animation
+byte prevBtn = 0;									//last button state
+bool btnTimerFlag = false;							//lets the program know if the user is holding the button down
+unsigned long btnTimer = 0;							//time the button has been held down
+byte currentAnim = 5;								//the currently displayed animation
+byte currentColor = 0;								//a counter shared by multiple animations
+unsigned long lastFrameTime = 0;					//the last time the animation changed frames
+byte currentFrame = 0;								//basic frame counter, used by the animations
+
 unsigned long lastSleepTime = 0;
-
-byte currentColor = 0;
-unsigned long lastTime = 0;
-byte currentLed = 0;
-bool increasing = true;
-
-unsigned long lastFrameTime = 0;
-byte currentFrame = 0;
-byte prevFrame = 0;
 
 
 void setup() {
-	ADCSRA &= ~_BV(ADEN);               //just leave the ADC turned off, we don't need it
-	ACSR |= _BV(ACD);                   //disable the analog comparator
-	//sleep();							//go to sleep immediately until woken up by the button interrupt
+	ADCSRA &= ~_BV(ADEN);               			//just leave the ADC turned off, we don't need it
+	ACSR |= _BV(ACD);                   			//disable the analog comparator
+	//sleep();										//go to sleep immediately until woken up by the button interrupt
 }
 
 
 void loop() {
-	checkBtn();				//check the button state
+	checkBtn();
 	animation();
 	checkFrame();
 	sleepTimer();
 }
 
 
-//checks if it has been 
+//checks if it's time to auto sleep
 void sleepTimer() {
-	if(millis() >= SLEEPTIME) {
+	if(millis() >= SLEEPTIME) {						//if the current time is greater than the sleeptime value
 		//lastSleepTime = millis();
-		sleep();
+		resetMillis();
+		sleep();									//go to sleep
 	}
 }
 
 
-
-
-
-//gets the current button state, this only works while the device is not sleeping
+//gets the current button state, does not work when sleeping
 void checkBtn() {
 	byte newBtn = (PINB & (1<<BUTTON));								//get the current/new button state (1 or 0)
 	
@@ -82,7 +66,7 @@ void checkBtn() {
 			//but it may also not have been held long enough to pass the debouncing test and switch the animation
 			
 			if(btnTimerFlag) {										//make sure the button timer is even running before we check that
-				//the above is needed for a dumb edge case when the button is released when waking up
+				//the above is needed for a dumb edge case when the button is released when waking up	
 					
 				if(millis() >= (btnTimer + SLEEP_DELAY)) {			//if the button has been held for at least SLEEP_DELAY ms
 					btnTimerFlag = false;							//stop the button timer
@@ -114,6 +98,8 @@ void sleep() {
     sleep_enable();                         // Sets the Sleep Enable bit in the MCUCR Register (SE BIT)
     //sei();                                  // Enable interrupts
     sleep_cpu();                            // sleep
+	
+	resetMillis();
 	
     cli();                                  // Disable interrupts
     PCMSK &= ~_BV(PCINT3);                  // Turn off PB3 as interrupt pin

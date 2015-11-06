@@ -1,5 +1,17 @@
 //LED charlieplexing section
 
+
+/* ANIMATIONS: 
+0: single led sequential
+1: single led sequential REVERSED
+2: tri led sequential
+3: tri led sequential REVERSED
+
+
+
+*/
+
+
 //charlieplexed LED sections, used readable as a key for the charliePin array
 #define SECTION_PB3 	0
 #define SECTION_PB4 	1
