@@ -73,21 +73,39 @@ void animation() {
 		if(currentAnim % 2 == 0) {						//if animations 0 or 2 are selected, reverse the order that the LEDs light up
 			ledOut = (MAXLEDS - 1) - currentFrame;
 		}
-		charmander(ledOut);								//light up a single LED
+		
+		//charmander(ledOut);								//light up a single LED
 		
 
 		if(currentAnim > 1) {							//if animations 2 or 3 are selected
-
+			//charmander(ledOut);
+		
 			//add two extra LEDs, offset by 6 each to create a sort of triangle effect
 
-			for(char i = 0;i<2;i++) {							//need to add two extra LEDs
+/* 			for(char i = 0;i<2;i++) {							//need to add two extra LEDs
 				byte offset = 6 + (6*i);						//create the offset
 				byte led = ledOut + offset;						//get the new led number to light
 				if(led >= MAXLEDS) {							//check for overflows
 					led = led - MAXLEDS;						//loop the led to the beginning if needed
 				}
 				charmander(led);								//light the LED
+			} */
+			
+			for(char i = 0;i<3;i++) {							//need to add two extra LEDs
+				//byte offset = 6 + (6*i);						//create the offset
+				byte offset = 6*i;						//create the offset
+				offset = ledOut + offset;						//get the new led number to light
+				if(offset >= MAXLEDS) {							//check for overflows
+					offset = offset - MAXLEDS;						//loop the led to the beginning if needed
+				}
+				charmander(offset);
+				DDRB = 0;
+				PORTB = 0;
 			}
+			
+		}
+		else {
+			charmander(ledOut);
 		}
 	}
 	else if(currentAnim == 6) {							//blink each full color section at once

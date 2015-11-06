@@ -11,7 +11,8 @@
 #define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
 #define MAXLEDS 			18						//the max number of LEDs in the entire project
 #define FRAME_DELAY			125						//base animation refresh rate in ms
-#define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
+//#define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
+#define SLEEPTIME			60000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
 
 
 byte prevBtn = 0;									//last button state
