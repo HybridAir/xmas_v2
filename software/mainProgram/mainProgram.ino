@@ -23,8 +23,6 @@ byte currentColor = 0;								//a counter shared by multiple animations
 unsigned long lastFrameTime = 0;					//the last time the animation changed frames
 byte currentFrame = 0;								//basic frame counter, used by the animations
 
-unsigned long lastSleepTime = 0;
-
 
 void setup() {
 	ADCSRA &= ~_BV(ADEN);               			//just leave the ADC turned off, we don't need it
@@ -34,8 +32,8 @@ void setup() {
 
 
 void loop() {
-	checkBtn();
 	animation();
+	checkBtn();
 	checkFrame();
 	sleepTimer();
 }

@@ -53,6 +53,10 @@ void charmander(byte i) {
 	
 	DDRB = (1<<charliePin[pgm_read_byte(&(LED[i][0]))])|(1<<charliePin[led1]);
 	PORTB = (1<<charliePin[led1]);
+	
+				delay(1);
+			DDRB = 0;
+			PORTB = 0;
   
 }
 
@@ -79,8 +83,8 @@ void animation() {
 
 		if(currentAnim > 1) {							//if animations 2 or 3 are selected
 			//charmander(ledOut);
-		
-			//add two extra LEDs, offset by 6 each to create a sort of triangle effect
+
+			//add two extra LEDs, offset6 each to create a sort of triangle effect
 
 /* 			for(char i = 0;i<2;i++) {							//need to add two extra LEDs
 				byte offset = 6 + (6*i);						//create the offset
@@ -91,6 +95,8 @@ void animation() {
 				charmander(led);								//light the LED
 			} */
 			
+
+			
 			for(char i = 0;i<3;i++) {							//need to add two extra LEDs
 				//byte offset = 6 + (6*i);						//create the offset
 				byte offset = 6*i;						//create the offset
@@ -99,9 +105,8 @@ void animation() {
 					offset = offset - MAXLEDS;						//loop the led to the beginning if needed
 				}
 				charmander(offset);
-				DDRB = 0;
-				PORTB = 0;
 			}
+
 			
 		}
 		else {
