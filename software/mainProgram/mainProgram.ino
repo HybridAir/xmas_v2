@@ -27,7 +27,6 @@ byte currentFrame = 0;								//basic frame counter, used by the animations
 
 
 void setup() {
-	ADCSRA &= ~_BV(ADEN);               			//just leave the ADC turned off, we don't need it
 	ACSR |= _BV(ACD);                   			//disable the analog comparator
 }
 
