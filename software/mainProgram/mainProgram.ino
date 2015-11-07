@@ -12,16 +12,16 @@
 #define ANIM_DELAY			25						//min ms the button needs to be held to change animations (mainly for debouncing)
 #define SLEEP_DELAY			1000					//min ms the button needs to be held to enable sleep mode
 #define MAXLEDS 			18						//the max number of LEDs in the entire project
+#define MAXANIMS			6						//the max number of programmed animations
 #define FRAME_DELAY			125						//base animation refresh rate in ms
-//#define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
-#define SLEEPTIME			60000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
+#define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
+//#define SLEEPTIME			60000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
 
 
 byte prevBtn = 0;									//last button state
 bool btnTimerFlag = false;							//lets the program know if the user is holding the button down
 unsigned long btnTimer = 0;							//time the button has been held down
-byte currentAnim = 5;								//the currently displayed animation
-byte currentColor = 0;								//a counter shared by multiple animations
+byte currentAnim = 0;								//the currently displayed animation
 unsigned long lastFrameTime = 0;					//the last time the animation changed frames
 byte currentFrame = 0;								//basic frame counter, used by the animations
 
@@ -29,7 +29,6 @@ byte currentFrame = 0;								//basic frame counter, used by the animations
 void setup() {
 	ADCSRA &= ~_BV(ADEN);               			//just leave the ADC turned off, we don't need it
 	ACSR |= _BV(ACD);                   			//disable the analog comparator
-	//sleep();										//go to sleep immediately until woken up by the button interrupt
 }
 
 
@@ -44,8 +43,6 @@ void loop() {
 //checks if it's time to auto sleep
 void sleepTimer() {
 	if(millis() >= SLEEPTIME) {						//if the current time is greater than the sleeptime value
-		//lastSleepTime = millis();
-		resetMillis();
 		sleep();									//go to sleep
 	}
 }
@@ -88,24 +85,25 @@ void checkBtn() {
 
 
 void sleep() {
-	
-	DDRB = 0;
-	PORTB = 0;
-	
-	
-    //GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
-    //PCMSK |= _BV(PCINT3);                   // Use PB3 as interrupt pin
-    set_sleep_mode(SLEEP_MODE_PWR_DOWN);    // replaces above statement
+	allLedsOff();
+
+    GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
+    PCMSK |= _BV(PCINT5);                   // Use PB5 as interrupt pin
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);    
     sleep_enable();                         // Sets the Sleep Enable bit in the MCUCR Register (SE BIT)
-    //sei();                                  // Enable interrupts
+    sei();                                  // Enable interrupts
     sleep_cpu();                            // sleep
 	
+	//wake up here
 	resetMillis();
 	
     cli();                                  // Disable interrupts
-    PCMSK &= ~_BV(PCINT3);                  // Turn off PB3 as interrupt pin
+	resetMillis();							//reset the millis value since the device is essentially turning off
+    PCMSK &= ~_BV(PCINT5);                  // Turn off PB5 as interrupt pin
     sleep_disable();                        // Clear SE bit
     sei();                                  // Enable interrupts
+	
+	switchAnimation();
 }
 
 
