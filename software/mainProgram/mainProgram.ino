@@ -4,7 +4,6 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-
 #include <util/delay.h>
 
 
@@ -15,7 +14,6 @@
 #define MAXANIMS			6						//the max number of programmed animations
 #define FRAME_DELAY			125						//base animation refresh rate in ms
 #define SLEEPTIME			3600000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
-//#define SLEEPTIME			60000					//time in ms to wait until auto sleeping (1 hour, 4 minutes slow)
 
 
 byte prevBtn = 0;									//last button state
@@ -24,10 +22,15 @@ unsigned long btnTimer = 0;							//time the button has been held down
 byte currentAnim = 0;								//the currently displayed animation
 unsigned long lastFrameTime = 0;					//the last time the animation changed frames
 byte currentFrame = 0;								//basic frame counter, used by the animations
+bool sleepEnabled = true;							//auto sleep enabled by default
 
 
 void setup() {
-	ACSR |= _BV(ACD);                   			//disable the analog comparator
+	ACSR |= _BV(ACD);                   			//disable the analog comparator	
+	
+	if((PINB & (1<<BUTTON))) {						//if the button is held during power up
+		sleepEnabled = false;						//disable auto sleep
+	}
 }
 
 
@@ -35,7 +38,10 @@ void loop() {
 	animation();
 	checkBtn();
 	checkFrame();
-	sleepTimer();
+	
+	if(sleepEnabled) {								//only check the sleep timer if auto sleeping is enabled
+		sleepTimer();
+	}
 }
 
 
