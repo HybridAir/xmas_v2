@@ -6,13 +6,12 @@
 1: single led sequential REVERSED
 2: tri led sequential
 3: tri led sequential REVERSED
+4: 6 led scan
+5: 6 led scan REVERSED
+6: full color flashing	*/
 
 
-
-*/
-
-
-//charlieplexed LED sections, used readable as a key for the charliePin array
+//charlieplexed LED sections
 #define SECTION_PB3 	0
 #define SECTION_PB4 	1
 #define SECTION_PB0 	2
@@ -46,99 +45,102 @@ const byte LED[MAXLEDS][2] PROGMEM = {
 {SECTION_PB4, SECTION_PB2}};
 
 
+//turns the specified LED on, and then off after 1 ms
+void ledOn(byte i) {
 
-void charmander(byte i) {
-
-	byte led1 = pgm_read_byte(&(LED[i][1]));
+	byte led1 = pgm_read_byte(&(LED[i][1]));		//get the LED the user wants to be lit out of PROGMEM
 	
+	//set port and output states as required by the specific LED
 	DDRB = (1<<charliePin[pgm_read_byte(&(LED[i][0]))])|(1<<charliePin[led1]);
 	PORTB = (1<<charliePin[led1]);
-										
+
 	_delay_ms(1);									//wait 1 ms to get a consistent brightness
-	allLedsOff();
-  
+	allLedsOff();									//turn all LEDs back off
 }
 
 
+//turns all LEDs off
 void allLedsOff() {
-	DDRB = 0;										//turn off all the LEDs immediately after
+	DDRB = 0;
 	PORTB = 0;
 }
-
 
 
 //displays the currently selected animation on the charlieplexed LEDs
 void animation() {
 	
-	if(currentAnim <= 5) {								//if animations 0-3 are selected
+	if(currentAnim <= 5) {									//if animations 0-5 are selected
 	
-		if(currentFrame >= MAXLEDS) {					//used for looping the animation
+		if(currentFrame >= MAXLEDS) {						//used for looping the animation
 			currentFrame = 0;
 		}
 		
-		byte ledOut = currentFrame;						//get the LED that needs to be lit
+		byte ledOut = currentFrame;							//get the LED that needs to be lit from the current animation frame
 		
-		if(currentAnim % 2 == 0) {						//if animations 0 or 2 are selected, reverse the order that the LEDs light up
+		if(currentAnim % 2 == 0) {							//if it's an even numbered animation, reverse it
 			ledOut = MAXLEDS - 1 - currentFrame;
 		}
 		
-		if(currentAnim > 1) {									//if animations 2 or 3 are selected
+		if(currentAnim > 1) {								//if animations 2-5 (4 total) are selected
 		
-			byte off = 6;
-			byte amount = 3;
+			byte offset = 6;								//default offset of 6 LEDs apart
+			byte amount = 3;								//default of 3 LEDs on at once
 		
-			if(currentAnim > 3) {
-				off = 1;
+			if(currentAnim > 3) {							//if animations 4 or 5 are selected
+				//display 6 LEDs directly next to eachother
+				offset = 1;
 				amount = 6;
 			}
 		
 		
-			for(byte i = 0;i<amount;i++) {							//need to add two extra LEDs
-				byte offset = off*i;								//create the offset
-				offset = ledOut + offset;						//get the new led number to light
-				if(offset >= MAXLEDS) {							//check for overflows
-					offset = offset - MAXLEDS;					//loop the led to the beginning if needed
+			for(byte i = 0;i<amount;i++) {					//for each LED that needs to be lit
+				byte finalOffset = offset*i;				//calculate the sequential offset
+				finalOffset = ledOut + finalOffset;			//calculate the LED number from the above
+				if(finalOffset >= MAXLEDS) {				//check for overflows
+					finalOffset = finalOffset - MAXLEDS;	//loop the LED to the beginning if needed
 				}
-				charmander(offset);
+				ledOn(finalOffset);							//light the LED
 			}
 		}
-		else {
-			charmander(ledOut);
+		else {												//else, just light the current LED
+			ledOn(ledOut);
 		}
 	}
-	else if(currentAnim == 6) {							//blink each full color section at once
+	else {													//blink each full color section at once
 	
-		if(currentFrame > 2) {
+		if(currentFrame > 2) {								//only 3 color sections to loop through
 			currentFrame = 0;
 		}
 
-		for(byte x = 0;x < MAXLEDS;x++) {		//go through every led, starting from the color offset
-			if(x % 3 == 0) {					//only match every third led
-				byte outled = x + currentFrame;
-				if(outled < MAXLEDS) {
-					charmander(outled);					//light the led we got, plus the color offset
+		for(byte x = 0;x < MAXLEDS;x++) {					//go through every LED
+			if(x % 3 == 0) {								//only match every third led, since there are 3 color sections
+				byte outled = x + currentFrame;				//calculate which color section needs to be lit to get the LED number
+				if(outled < MAXLEDS) {						//don't overflow
+					ledOn(outled);							//light the offset color sectioned LED we got
 				}
 			}
-	
 		}
 	}
 }
 
 
+//checks if it's time to go to the next animation frame
 void checkFrame() {
-	if(millis() > FRAME_DELAY + lastFrameTime) {
-		lastFrameTime = millis();
-		currentFrame++;
+	if(millis() > FRAME_DELAY + lastFrameTime) {			//if it has been long enough since the last frame change
+		lastFrameTime = millis();							//update this to the current time
+		currentFrame++;										//increment the fram value
 	}
 }
 
 
+//switches the animation and loops to the first when needed
 void switchAnimation() {
+	//reset animation timing variable
 	currentFrame = 0;
 	lastFrameTime = 0;
 	
-	currentAnim++;
-	if(currentAnim > MAXANIMS) {
+	currentAnim++;											//increment the current animation value
+	if(currentAnim > MAXANIMS) {							//loop to the beginning when needed
 		currentAnim = 0;
 	}
 }

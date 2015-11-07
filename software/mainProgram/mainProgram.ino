@@ -88,30 +88,28 @@ void checkBtn() {
 }
 
 
-
+//puts the device to sleep
 void sleep() {
-	allLedsOff();
+	allLedsOff();							//turn all LEDs off to save power
 
-    GIMSK |= _BV(PCIE);                     // Enable Pin Change Interrupts
-    PCMSK |= _BV(PCINT5);                   // Use PB5 as interrupt pin
-    set_sleep_mode(SLEEP_MODE_PWR_DOWN);    
-    sleep_enable();                         // Sets the Sleep Enable bit in the MCUCR Register (SE BIT)
-    sei();                                  // Enable interrupts
-    sleep_cpu();                            // sleep
-	
+    GIMSK |= _BV(PCIE);                     //enable Pin Change Interrupts
+    PCMSK |= _BV(PCINT5);                   //use PB5 as interrupt pin to wake the device back up
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);    //set the sleep mode
+    sleep_enable();                         //sets the Sleep Enable bit in the MCUCR Register (SE BIT)
+    sei();                                  //enable interrupts
+    sleep_cpu();                            //sleep
+
 	//wake up here
-	resetMillis();
-	
-    cli();                                  // Disable interrupts
+    cli();                                  //disable interrupts
 	resetMillis();							//reset the millis value since the device is essentially turning off
-    PCMSK &= ~_BV(PCINT5);                  // Turn off PB5 as interrupt pin
-    sleep_disable();                        // Clear SE bit
-    sei();                                  // Enable interrupts
+    PCMSK &= ~_BV(PCINT5);                  //turn off PB5 as interrupt pin so it can be used for other things
+    sleep_disable();                        //clear SE bit
+    sei();                                  //enable interrupts
 	
 	switchAnimation();
 }
 
 
-
+//the program goes here directly after waking up
 ISR(PCINT0_vect) {
 }
