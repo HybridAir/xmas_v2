@@ -4218,24 +4218,24 @@ In this library the device names are the same as the pin names of the symbols, t
 </classes>
 <parts>
 <part name="U$1" library="SparkFun-DigitalIC" deviceset="ATTINY13" device="SOIC"/>
-<part name="BLU0" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="BLU3" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="BLU6" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="BLU9" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="BLU12" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="BLU15" library="SparkFun-LED" deviceset="LED" device="5MM-KIT"/>
-<part name="RED1" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="RED4" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="RED7" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="RED10" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="RED13" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="RED16" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN2" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN5" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN8" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN11" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN14" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
-<part name="GRN17" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
+<part name="BLU0" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="0"/>
+<part name="BLU3" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="3"/>
+<part name="BLU6" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="6"/>
+<part name="BLU9" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="9"/>
+<part name="BLU12" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="12"/>
+<part name="BLU15" library="SparkFun-LED" deviceset="LED" device="5MM-KIT" value="15"/>
+<part name="RED1" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="1"/>
+<part name="RED4" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="4"/>
+<part name="RED7" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="7"/>
+<part name="RED10" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="10"/>
+<part name="RED13" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="13"/>
+<part name="RED16" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="16"/>
+<part name="GRN2" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="2"/>
+<part name="GRN5" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="5"/>
+<part name="GRN8" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="8"/>
+<part name="GRN11" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="11"/>
+<part name="GRN14" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="14"/>
+<part name="GRN17" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="17"/>
 <part name="BAT1" library="SparkFun-Electromechanical" deviceset="BATTERY" device="20PTH" value="3V"/>
 <part name="S1" library="SparkFun-Electromechanical" deviceset="SWITCH-MOMENTARY-2" device="SMD-4"/>
 <part name="R1" library="SparkFun-Passives" deviceset="RESISTOR" device="0805-RES" value="100"/>
@@ -4586,14 +4586,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="SUPPLY1" gate="GND" pin="GND"/>
 <wire x1="50.8" y1="25.4" x2="50.8" y2="12.7" width="0.1524" layer="91"/>
 <junction x="50.8" y="25.4"/>
-<pinref part="JP2" gate="G$1" pin="1"/>
 <wire x1="50.8" y1="12.7" x2="50.8" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="25.4" x2="35.56" y2="25.4" width="0.1524" layer="91"/>
-<wire x1="35.56" y1="25.4" x2="35.56" y2="30.48" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="G$1" pin="1"/>
-<wire x1="35.56" y1="25.4" x2="25.4" y2="25.4" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="25.4" x2="25.4" y2="30.48" width="0.1524" layer="91"/>
-<junction x="35.56" y="25.4"/>
 <pinref part="R6" gate="G$1" pin="1"/>
 <wire x1="86.36" y1="12.7" x2="50.8" y2="12.7" width="0.1524" layer="91"/>
 <junction x="50.8" y="12.7"/>
