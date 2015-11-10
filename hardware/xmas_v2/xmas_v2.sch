@@ -1321,9 +1321,12 @@ Source: http://www.osram.convergy.de/ ... LG_R971.pdf</description>
 <rectangle x1="0.175" y1="-0.75" x2="0.325" y2="-0.5" layer="51"/>
 <rectangle x1="-0.325" y1="-0.75" x2="-0.175" y2="-0.5" layer="51"/>
 <rectangle x1="-0.2" y1="-0.675" x2="0.2" y2="-0.5" layer="51"/>
-<rectangle x1="-0.1" y1="0" x2="0.1" y2="0.2" layer="21"/>
 <rectangle x1="-0.6" y1="0.5" x2="-0.3" y2="0.8" layer="51"/>
 <rectangle x1="-0.625" y1="0.925" x2="-0.4" y2="1" layer="51"/>
+<wire x1="-0.3556" y1="-0.2286" x2="0.3556" y2="-0.2286" width="0.127" layer="21"/>
+<wire x1="0.3556" y1="-0.2286" x2="0" y2="0.127" width="0.127" layer="21"/>
+<wire x1="0" y1="0.127" x2="-0.3556" y2="-0.2286" width="0.127" layer="21"/>
+<wire x1="0.3556" y1="0.2032" x2="-0.3556" y2="0.2032" width="0.127" layer="21"/>
 </package>
 <package name="CHIPLED_1206">
 <description>&lt;b&gt;CHIPLED&lt;/b&gt;&lt;p&gt;
